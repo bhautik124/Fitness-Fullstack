@@ -21,7 +21,7 @@ const Contect = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/user/contect",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/contect",
         formData
       );
 
