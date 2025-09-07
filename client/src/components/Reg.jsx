@@ -48,7 +48,7 @@ const Reg = () => {
     <div className="flex flex-col md:flex-row min-h-screen">
       <div className="hidden md:block md:w-1/2">
         <img
-          src="src/components/files/AuthImage.jpg"
+          src="files/AuthImage.jpg"
           alt="Man running on treadmill"
           className="w-full h-full object-cover"
         />
