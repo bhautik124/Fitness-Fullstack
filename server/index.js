@@ -16,16 +16,11 @@ app.set("view engine", "ejs");
 
 app.use(
   cors({
-    origin: [
-      process.env.CLIENT_URL,
-      "http://localhost:5173",
-      "https://fitness-fullstack-frontend.onrender.com"
-    ],
+    origin: process.env.CLIENT_URL,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
-
 
 app.use("/api/user/", userRouter);
 
