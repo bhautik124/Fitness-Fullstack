@@ -8,7 +8,7 @@ const Blog = () => {
 
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/user/blog");
+      const response = await axios.get("https://fitness-fullstack-gii5.onrender.com/api/user/blog");
       setBlogs(response.data);
     } catch (error) {
       setError("Failed to fetch blog entries.");
