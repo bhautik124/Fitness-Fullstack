@@ -18,7 +18,7 @@ const Reg = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8080/api/user/signup",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/signup",
         { username, email, password },
         {
           headers: { "Content-Type": "application/json" },
