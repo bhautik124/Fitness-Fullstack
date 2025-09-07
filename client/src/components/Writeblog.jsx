@@ -23,7 +23,7 @@ const Writeblog = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/user/blog",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/blog",
         formData
       );
 
