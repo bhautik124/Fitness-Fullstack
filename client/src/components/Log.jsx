@@ -16,7 +16,7 @@ const Log = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8080/api/user/signin",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/signin",
         { email, password },
         {
           headers: { "Content-Type": "application/json" },
