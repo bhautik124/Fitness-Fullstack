@@ -9,7 +9,7 @@ const Nav = () => {
   const handleLogout = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/user/logout",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/logout",
         {},
         { withCredentials: true }
       );
