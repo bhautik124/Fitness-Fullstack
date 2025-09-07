@@ -17,7 +17,7 @@ const Workouts = () => {
       setLoading(true);
       try {
         const response = await fetch(
-          `http://localhost:8080/api/user/workout?date=${formattedDate}`,
+          `https://fitness-fullstack-gii5.onrender.com/api/user/workout?date=${formattedDate}`,
           {
             method: "GET",
             headers: {
