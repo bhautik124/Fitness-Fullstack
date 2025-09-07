@@ -40,7 +40,7 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/user/dashboard",
+          "https://fitness-fullstack-gii5.onrender.com/api/user/dashboard",
           { withCredentials: true }
         );
         setDashboardData(response.data);
@@ -55,7 +55,7 @@ const Dashboard = () => {
     const fetchWorkouts = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/user/workout",
+          "https://fitness-fullstack-gii5.onrender.com/api/user/workout",
           { withCredentials: true }
         );
         setWorkouts(response.data.todaysWorkouts);
@@ -74,7 +74,7 @@ const Dashboard = () => {
   const handleAddWorkout = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/user/workout",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/workout",
         { workoutString },
         { withCredentials: true }
       );
@@ -88,7 +88,7 @@ const Dashboard = () => {
       });
 
       const dashboardResponse = await axios.get(
-        "http://localhost:8080/api/user/dashboard",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/dashboard",
         { withCredentials: true }
       );
       setDashboardData(dashboardResponse.data);
@@ -119,7 +119,7 @@ const Dashboard = () => {
   const handleSaveEdit = async () => {
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/user/workout/${editingWorkout._id}`,
+        `https://fitness-fullstack-gii5.onrender.com/api/user/workout/${editingWorkout._id}`,
         editedWorkout,
         { withCredentials: true }
       );
@@ -131,7 +131,7 @@ const Dashboard = () => {
       );
 
       const dashboardResponse = await axios.get(
-        "http://localhost:8080/api/user/dashboard",
+        "https://fitness-fullstack-gii5.onrender.com/api/user/dashboard",
         { withCredentials: true }
       );
       setDashboardData(dashboardResponse.data);
@@ -153,7 +153,7 @@ const Dashboard = () => {
   const handleDeleteWorkout = async (workoutId) => {
     try {
       await axios.delete(
-        `http://localhost:8080/api/user/workout/${workoutId}`,
+        `https://fitness-fullstack-gii5.onrender.com/api/user/workout/${workoutId}`,
         { withCredentials: true }
       );
 
