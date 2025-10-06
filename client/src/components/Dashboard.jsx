@@ -148,13 +148,27 @@ const Dashboard = () => {
         duration: "",
       });
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Error adding workout",
-        {
+      console.error("Error adding workout:", error);
+      
+      if (error.response?.status === 403) {
+        toast.error("Please login first to add workouts", {
           position: "top-center",
-          autoClose: 2000,
-        }
-      );
+          autoClose: 3000,
+        });
+      } else if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+      } else {
+        toast.error(
+          error.response?.data?.message || error.response?.data || "Error adding workout",
+          {
+            position: "top-center",
+            autoClose: 3000,
+          }
+        );
+      }
     }
   };
 

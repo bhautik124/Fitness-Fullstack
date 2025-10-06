@@ -14,12 +14,12 @@ module.exports.registerUser = async function (req, res) {
 
     let userExist = await userModel.findOne({ email });
     if (userExist) {
-      return res.status(400).send("User already exists");
+      return res.status(400).json({ message: "User already exists" });
     }
 
     bcrypt.genSalt(10, function (err, salt) {
       bcrypt.hash(password, salt, async function (err, hash) {
-        if (err) return res.send(err.message);
+        if (err) return res.status(500).json({ message: err.message });
         else {
           let createUser = await userModel.create({
             username,
@@ -31,30 +31,68 @@ module.exports.registerUser = async function (req, res) {
             { email: createUser.email, id: createUser._id },
             process.env.JWT_SECRET_KEY
           );
-          res.cookie("token", token);
-          res.status(201).send({ token, user: createUser });
+          
+          // Set cookie with proper options
+          res.cookie("token", token, { 
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+          });
+          
+          res.status(201).json({ 
+            success: true,
+            token, 
+            user: {
+              _id: createUser._id,
+              username: createUser.username,
+              email: createUser.email
+            }
+          });
         }
       });
     });
   } catch (error) {
     console.log(error.message);
+    res.status(500).json({ message: "Server error during registration" });
   }
 };
 
 module.exports.loginUser = async function (req, res) {
-  const { email, password } = req.body;
-  const user = await userModel.findOne({ email });
-  if (!user) return res.status(400).send("Invalid email or password");
+  try {
+    const { email, password } = req.body;
+    const user = await userModel.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Invalid email or password" });
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) return res.status(400).send("Invalid email or password");
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
 
-  const token = jwt.sign(
-    { email: user.email, id: user._id },
-    process.env.JWT_SECRET_KEY
-  );
-  res.cookie("token", token, { httpOnly: true });
-  res.status(200).json({ token, user });
+    const token = jwt.sign(
+      { email: user.email, id: user._id },
+      process.env.JWT_SECRET_KEY
+    );
+    
+    // Set cookie with proper options
+    res.cookie("token", token, { 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Only HTTPS in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+    
+    res.status(200).json({ 
+      success: true,
+      token, 
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Server error during login" });
+  }
 };
 
 module.exports.logoutUser = async function (req, res) {
