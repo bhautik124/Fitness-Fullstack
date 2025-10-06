@@ -36,6 +36,16 @@ const Dashboard = () => {
     reps: "",
   });
 
+  // New simple form state
+  const [showSimpleForm, setShowSimpleForm] = useState(true);
+  const [workoutForm, setWorkoutForm] = useState({
+    category: "Strength",
+    workoutName: "",
+    sets: "",
+    reps: "",
+    duration: "",
+  });
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -73,9 +83,39 @@ const Dashboard = () => {
 
   const handleAddWorkout = async () => {
     try {
+      let workoutStringToSend = "";
+
+      if (showSimpleForm) {
+        // Convert simple form to workout string format
+        const { category, workoutName, sets, reps, duration } = workoutForm;
+
+        if (!category || !workoutName) {
+          toast.error("Please fill in workout name", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+          return;
+        }
+
+        // Build workout string based on category
+        if (category === "Strength" && sets && reps) {
+          workoutStringToSend = `#${category};${workoutName} ${sets} sets of ${reps} reps`;
+        } else if (category === "Cardio" && duration) {
+          workoutStringToSend = `#${category};${duration} minutes of ${workoutName}`;
+        } else {
+          toast.error("Please fill in all required fields", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+          return;
+        }
+      } else {
+        workoutStringToSend = workoutString;
+      }
+
       const response = await axios.post(
         "https://fitness-fullstack-gii5.onrender.com/api/user/workout",
-        { workoutString },
+        { workoutString: workoutStringToSend },
         { withCredentials: true }
       );
 
@@ -97,11 +137,23 @@ const Dashboard = () => {
         position: "top-center",
         autoClose: 1000,
       });
+
+      // Reset forms
       setWorkoutString("");
+      setWorkoutForm({
+        category: "Strength",
+        workoutName: "",
+        sets: "",
+        reps: "",
+        duration: "",
+      });
     } catch (error) {
       toast.error(
-        "Error adding workout:",
-        error.response?.data || error.message
+        error.response?.data?.message || "Error adding workout",
+        {
+          position: "top-center",
+          autoClose: 2000,
+        }
       );
     }
   };
@@ -243,29 +295,131 @@ const Dashboard = () => {
           </div>
 
           <div className="bg-white p-4 md:p-6 rounded shadow">
-            <h3 className="text-blue-700 font-semibold text-sm md:text-base">
-              Add New Workout
-            </h3>
-            <div className="relative mt-2">
-              <label
-                className={`absolute left-2 top-2 transition-all duration-200 text-xs md:text-sm ${
-                  workoutString ? "text-blue-700" : "text-gray-400"
-                }`}
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-blue-700 font-semibold text-sm md:text-base">
+                Add New Workout
+              </h3>
+              <button
+                className="text-xs text-blue-500 underline"
+                onClick={() => setShowSimpleForm(!showSimpleForm)}
               >
-                #Legs - Back Squat - 5 setsX15 reps - 30 kg - 10 min
-              </label>
-              <textarea
-                className="w-full h-32 p-2 border rounded mt-2 pt-8 text-sm md:text-base"
-                value={workoutString}
-                onChange={(e) => setWorkoutString(e.target.value)}
-              ></textarea>
+                {showSimpleForm ? "Advanced Mode" : "Simple Mode"}
+              </button>
             </div>
-            <button
-              className="mt-4 bg-blue-500 text-white px-3 py-2 md:px-4 md:py-2 rounded text-sm md:text-base"
-              onClick={handleAddWorkout}
-            >
-              Add Workout
-            </button>
+
+            {showSimpleForm ? (
+              // Simple Form
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Workout Type *
+                  </label>
+                  <select
+                    className="w-full p-2 border rounded text-sm md:text-base"
+                    value={workoutForm.category}
+                    onChange={(e) =>
+                      setWorkoutForm({ ...workoutForm, category: e.target.value })
+                    }
+                  >
+                    <option value="Strength">Strength Training</option>
+                    <option value="Cardio">Cardio</option>
+                    <option value="Flexibility">Flexibility</option>
+                    <option value="Sports">Sports</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Workout Name *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Push-ups, Running, Yoga"
+                    className="w-full p-2 border rounded text-sm md:text-base"
+                    value={workoutForm.workoutName}
+                    onChange={(e) =>
+                      setWorkoutForm({ ...workoutForm, workoutName: e.target.value })
+                    }
+                  />
+                </div>
+
+                {workoutForm.category === "Strength" ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Sets *
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="3"
+                        className="w-full p-2 border rounded text-sm md:text-base"
+                        value={workoutForm.sets}
+                        onChange={(e) =>
+                          setWorkoutForm({ ...workoutForm, sets: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Reps *
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="12"
+                        className="w-full p-2 border rounded text-sm md:text-base"
+                        value={workoutForm.reps}
+                        onChange={(e) =>
+                          setWorkoutForm({ ...workoutForm, reps: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Duration (minutes) *
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="30"
+                      className="w-full p-2 border rounded text-sm md:text-base"
+                      value={workoutForm.duration}
+                      onChange={(e) =>
+                        setWorkoutForm({ ...workoutForm, duration: e.target.value })
+                      }
+                    />
+                  </div>
+                )}
+
+                <button
+                  className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm md:text-base font-medium transition-colors"
+                  onClick={handleAddWorkout}
+                >
+                  Add Workout
+                </button>
+              </div>
+            ) : (
+              // Advanced Mode
+              <div>
+                <div className="relative mt-2">
+                  <label className="block text-xs text-gray-500 mb-1">
+                    Format: #Category;Exercise sets/duration info
+                  </label>
+                  <textarea
+                    className="w-full h-32 p-2 border rounded text-sm md:text-base"
+                    placeholder="#Strength;Push-ups 3 sets of 15 reps"
+                    value={workoutString}
+                    onChange={(e) => setWorkoutString(e.target.value)}
+                  ></textarea>
+                </div>
+                <button
+                  className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm md:text-base font-medium transition-colors"
+                  onClick={handleAddWorkout}
+                >
+                  Add Workout
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
