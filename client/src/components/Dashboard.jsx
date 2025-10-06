@@ -98,9 +98,23 @@ const Dashboard = () => {
         }
 
         // Build workout string based on category
-        if (category === "Strength" && sets && reps) {
+        if (category === "Strength") {
+          if (!sets || !reps) {
+            toast.error("Please fill in sets and reps for strength training", {
+              position: "top-center",
+              autoClose: 2000,
+            });
+            return;
+          }
           workoutStringToSend = `#${category};${workoutName} ${sets} sets of ${reps} reps`;
-        } else if (category === "Cardio" && duration) {
+        } else if (category === "Cardio" || category === "Flexibility" || category === "Sports") {
+          if (!duration) {
+            toast.error("Please fill in duration", {
+              position: "top-center",
+              autoClose: 2000,
+            });
+            return;
+          }
           workoutStringToSend = `#${category};${duration} minutes of ${workoutName}`;
         } else {
           toast.error("Please fill in all required fields", {
@@ -332,7 +346,13 @@ const Dashboard = () => {
                     className="w-full p-2 border rounded text-sm md:text-base"
                     value={workoutForm.category}
                     onChange={(e) =>
-                      setWorkoutForm({ ...workoutForm, category: e.target.value })
+                      setWorkoutForm({ 
+                        category: e.target.value,
+                        workoutName: "",
+                        sets: "",
+                        reps: "",
+                        duration: ""
+                      })
                     }
                   >
                     <option value="Strength">Strength Training</option>
@@ -402,6 +422,11 @@ const Dashboard = () => {
                         setWorkoutForm({ ...workoutForm, duration: e.target.value })
                       }
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {workoutForm.category === "Cardio" && "How many minutes did you do cardio?"}
+                      {workoutForm.category === "Flexibility" && "How many minutes of stretching/yoga?"}
+                      {workoutForm.category === "Sports" && "How many minutes did you play?"}
+                    </p>
                   </div>
                 )}
 
